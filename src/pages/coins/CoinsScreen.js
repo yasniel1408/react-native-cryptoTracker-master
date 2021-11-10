@@ -43,9 +43,6 @@ const CoinsScreen = ({navigation}) => {
           )}
         />
       )}
-      <Pressable style={styles.btn} onPress={() => handlePress()}>
-        <Text style={styles.btnText}>Ir a Detail</Text>
-      </Pressable>
     </View>
   );
 };
