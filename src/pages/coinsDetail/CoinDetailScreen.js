@@ -1,34 +1,69 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, {useEffect} from 'react';
-import {View, Text, Image, StyleSheet} from 'react-native';
+import React, {useEffect, useState} from 'react';
+import {View, Text, Image, StyleSheet, SectionList} from 'react-native';
 import colors from '../../utils/colors';
+import Http from '../../utils/http';
 
 const CoinsDetailScreen = ({
   navigation,
   route: {
-    params: {item},
+    params: {coin},
   },
 }) => {
+  const [markets, setMarkets] = useState([]);
+
   useEffect(() => {
-    navigation.setOptions({title: item.symbol});
+    navigation.setOptions({title: coin.symbol});
   }, []);
 
   const getSymbolIcon = () => {
-    const symbol = item.name.toLowerCase().replace(' ', '-');
+    const symbol = coin.name.toLowerCase().replace(' ', '-');
     return `https://c1.coinlore.com/img/25x25/${symbol}.png`;
+  };
+
+  const sections = [
+    {
+      title: 'Market cap',
+      data: [coin?.market_cap_usd],
+    },
+    {
+      title: 'Volume 24h',
+      data: [coin?.volume24],
+    },
+    {
+      title: 'Change 24h',
+      data: [coin?.percent_change_24h],
+    },
+  ];
+
+  const getMarkets = async () => {
+    const url = `https://api.coinlore.net/api/coin/markets/?id=${coin?.id}`;
+    const marketsReq = await Http.instance.get(url);
+    setMarkets(marketsReq);
   };
 
   return (
     <View style={styles.container}>
-      <View>
+      <View style={styles.subHeader}>
         <Image style={styles.iconImg} source={{uri: getSymbolIcon()}} />
-        <Text>{item.name}</Text>
-        <Text>{item.rank}</Text>
-        <Text>{item.price_usd}dd</Text>
-        <Text>{item.name}</Text>
-        <Text>{item.name}</Text>
-        <Text>{JSON.stringify(item)}</Text>
+        <Text style={styles.titleText}>{coin.name}</Text>
       </View>
+
+      <SectionList
+        style={styles.section}
+        sections={sections}
+        keyExtractor={(item, index) => item + index}
+        renderItem={({item}) => (
+          <View style={styles.sectionItem}>
+            <Text style={styles.itemText}>{item}</Text>
+          </View>
+        )}
+        renderSectionHeader={({section}) => (
+          <View style={styles.sectionHeader}>
+            <Text style={styles.sectionText}>{section.title}</Text>
+          </View>
+        )}
+      />
     </View>
   );
 };
