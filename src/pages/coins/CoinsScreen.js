@@ -15,8 +15,8 @@ const CoinsScreen = ({navigation}) => {
   const [coinsJson, setCoinsJson] = useState();
   const [loading, setLoading] = useState(false);
 
-  const handlePress = async item => {
-    navigation.navigate('CoinsDetail', {item});
+  const handlePress = async coin => {
+    navigation.navigate('CoinsDetail', {coin});
   };
 
   useEffect(() => {
@@ -39,7 +39,7 @@ const CoinsScreen = ({navigation}) => {
         <FlatList
           data={coinsJson}
           renderItem={({item}) => (
-            <CoisItem item={item} onPress={() => handlePress(item)} />
+            <CoisItem coin={item} onPress={() => handlePress(item)} />
           )}
         />
       )}
