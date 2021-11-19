@@ -2,7 +2,7 @@ import React from 'react';
 import {View, Text, StyleSheet, Image, Pressable} from 'react-native';
 import colors from '../../utils/colors';
 
-const CoisItem = ({coin, onPress}) => {
+const CoinItem = ({coin, onPress}) => {
   const getImgArrow = () => {
     if (coin.percent_change_1h > 0) {
       return require('../../assets/arrow_up.png');
@@ -26,7 +26,7 @@ const CoisItem = ({coin, onPress}) => {
   );
 };
 
-export default CoisItem;
+export default CoinItem;
 
 const style = StyleSheet.create({
   container: {

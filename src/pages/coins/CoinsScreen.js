@@ -1,18 +1,12 @@
 import React, {useEffect, useState} from 'react';
-import {
-  View,
-  Text,
-  Pressable,
-  StyleSheet,
-  FlatList,
-  ActivityIndicator,
-} from 'react-native';
+import {View, StyleSheet, FlatList, ActivityIndicator} from 'react-native';
 import colors from '../../utils/colors';
 import Http from '../../utils/http';
-import CoisItem from './CoistItem';
+import CoinItem from './CointItem';
+import CoinsSearch from './CoinsSearch';
 
 const CoinsScreen = ({navigation}) => {
-  const [coinsJson, setCoinsJson] = useState();
+  const [coinsJson, setCoinsJson] = useState([]);
   const [loading, setLoading] = useState(false);
 
   const handlePress = async coin => {
@@ -31,15 +25,26 @@ const CoinsScreen = ({navigation}) => {
     load();
   }, []);
 
+  const handleSearch = query => {
+    const coinsFiltered = coinsJson.filter(coin => {
+      return (
+        coin.name.toLowerCase().includes(query.target.value.toLowerCase()) ||
+        coin.symbol.toLowerCase().includes(query.target.value.toLowerCase())
+      );
+    });
+    setCoinsJson(coinsFiltered);
+  };
+
   return (
     <View style={styles.container}>
+      <CoinsSearch onChange={handleSearch} />
       {loading ? (
         <ActivityIndicator color="white" size="large" />
       ) : (
         <FlatList
           data={coinsJson}
           renderItem={({item}) => (
-            <CoisItem coin={item} onPress={() => handlePress(item)} />
+            <CoinItem coin={item} onPress={() => handlePress(item)} />
           )}
         />
       )}

@@ -1,8 +1,16 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, {useEffect, useState} from 'react';
-import {View, Text, Image, StyleSheet, SectionList} from 'react-native';
+import {
+  View,
+  Text,
+  Image,
+  StyleSheet,
+  SectionList,
+  FlatList,
+} from 'react-native';
 import colors from '../../utils/colors';
 import Http from '../../utils/http';
+import CoinMarketItem from './CoinMarketItem';
 
 const CoinsDetailScreen = ({
   navigation,
@@ -11,16 +19,6 @@ const CoinsDetailScreen = ({
   },
 }) => {
   const [markets, setMarkets] = useState([]);
-
-  useEffect(() => {
-    navigation.setOptions({title: coin.symbol});
-  }, []);
-
-  const getSymbolIcon = () => {
-    const symbol = coin.name.toLowerCase().replace(' ', '-');
-    return `https://c1.coinlore.com/img/25x25/${symbol}.png`;
-  };
-
   const sections = [
     {
       title: 'Market cap',
@@ -36,10 +34,19 @@ const CoinsDetailScreen = ({
     },
   ];
 
-  const getMarkets = async () => {
-    const url = `https://api.coinlore.net/api/coin/markets/?id=${coin?.id}`;
-    const marketsReq = await Http.instance.get(url);
-    setMarkets(marketsReq);
+  useEffect(() => {
+    navigation.setOptions({title: coin.symbol});
+    const getMarkets = async () => {
+      const url = `https://api.coinlore.net/api/coin/markets/?id=${coin?.id}`;
+      const marketsReq = await Http.instance.get(url);
+      setMarkets(marketsReq.data);
+    };
+    getMarkets();
+  }, []);
+
+  const getSymbolIcon = () => {
+    const symbol = coin.name.toLowerCase().replace(' ', '-');
+    return `https://c1.coinlore.com/img/25x25/${symbol}.png`;
   };
 
   return (
@@ -63,6 +70,16 @@ const CoinsDetailScreen = ({
             <Text style={styles.sectionText}>{section.title}</Text>
           </View>
         )}
+      />
+
+      <Text style={styles.marketsTitle}>Markets</Text>
+
+      <FlatList
+        style={styles.list}
+        keyExtractor={item => `${item.base}-${item.name}-${item.quote}`}
+        data={markets}
+        renderItem={({item}) => <CoinMarketItem item={item} />}
+        horizontal={true}
       />
     </View>
   );
